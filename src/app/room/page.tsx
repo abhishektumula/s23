@@ -1,6 +1,9 @@
 import { Container } from "@/components/container";
+import { NavBar } from "@/components/bars";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { Footer } from "@/components/bars/footer";
+import { ChatBubbles } from "@/components/chat-interface";
 
 export const getUserDetails = async () => {
   const session = await getServerSession();
@@ -12,10 +15,14 @@ export default async function RoomLayout() {
   if (!session) {
     redirect("/");
   }
+  const adminUser = session.user?.name;
   return (
-    <Container>
-      this is room page. With out proper authentication you cannot enter here by
-      any means
-    </Container>
+    <div className="flex flex-col w-full">
+      <Container className="border border-neutral-500">
+        <NavBar />
+        <Footer adminUser={adminUser} />
+        <ChatBubbles adminUser={adminUser} />
+      </Container>
+    </div>
   );
 }
