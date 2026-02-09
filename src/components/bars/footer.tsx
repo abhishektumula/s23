@@ -1,9 +1,8 @@
 "use client";
 import { IconPaperclip } from "@tabler/icons-react";
 import { IconUpload } from "@tabler/icons-react";
-import { useState } from "react";
-import { dbClient } from "@/app/db";
-import { messages } from "../chat-interface/data";
+import { useEffect, useState } from "react";
+import { useRef } from "react";
 
 export const Footer = ({
   adminUser,
@@ -11,31 +10,38 @@ export const Footer = ({
   adminUser: string | null | undefined;
 }) => {
   const [currentMessage, setCurrentMessage] = useState<string>("");
+  const socketRef = useRef<WebSocket | null>(null);
 
-  const handleClick = async ({
-    message,
-    adminUser,
-  }: {
-    message: string;
-    adminUser: string;
-  }) => {
-    const user = await dbClient.userAuth.findFirst({
-      where: {
-        username: adminUser,
-      },
-    });
-    if (!user) {
-      throw new Error("fuck you db");
+  useEffect(() => {
+    const socket = new WebSocket("ws://localhost:8000");
+    socketRef.current = socket;
+
+    socket.onopen = () => {
+      console.log("WebSocket connection established");
+    };
+
+    socket.onmessage = (event) => {
+      console.log("Received message:", event.data);
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  const handeleSendMessage = () => {
+    if (socketRef.current) {
+      const msg = JSON.stringify({
+        sender: adminUser,
+        message: currentMessage,
+      });
+      socketRef.current.send(msg);
+      setCurrentMessage("");
     }
-
-    await dbClient.testmessages.create({
-      data: {
-        userId: user.id,
-        username: adminUser,
-        message: message,
-        timestamp: new Date(),
-      },
-    });
   };
   return (
     <div className="w-full max-w-2xl mx-auto fixed bottom-0 mb-4 px-4">
@@ -55,7 +61,7 @@ export const Footer = ({
               onChange={(e) => setCurrentMessage(e.target.value)}
             ></textarea>
             <div className="border border-neutral-500 rounded-full flex items-center justify-center p-2">
-              <button onClick={() => console.log("clicked")}>
+              <button onClick={handeleSendMessage}>
                 <IconUpload size={16} />
               </button>
             </div>

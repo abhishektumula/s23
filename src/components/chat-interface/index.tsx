@@ -1,4 +1,9 @@
-import { messages } from "./data";
+"use client";
+export type message = {
+  username: string;
+  message: string;
+};
+import { useState, useEffect } from "react";
 export const Bubble = ({
   username,
   message,
@@ -26,6 +31,7 @@ export const ChatBubbles = ({
 }: {
   adminUser: string | null | undefined;
 }) => {
+  const [messages, setMessaged] = useState<message[]>([]);
   return (
     <div className="flex flex-col justify-start items-start px-2 py-4 w-full gap-2">
       <div className="h-20 bg-transparent w-full"></div>
