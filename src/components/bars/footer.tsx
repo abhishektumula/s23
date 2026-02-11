@@ -1,18 +1,49 @@
 "use client";
 import { IconPaperclip } from "@tabler/icons-react";
 import { IconUpload } from "@tabler/icons-react";
-import { useState } from "react";
-import { messages } from "../chat-interface/data";
+import { useEffect, useRef, useState } from "react";
+import { messageType } from "./common-bar";
 
 export const Footer = ({
   adminUser,
+  context,
 }: {
   adminUser: string | null | undefined;
+  context: messageType[];
 }) => {
   const [currentMessage, setCurrentMessage] = useState("");
-  const [placeholder, setPlaceholder] = useState("Enter message here");
+
+  const socketRef = useRef<WebSocket | null>(null);
+  useEffect(() => {
+    const socket = new WebSocket("ws://localhost:8000");
+    socketRef.current = socket;
+
+    socket.onopen = () => {
+      console.log("connected to web socket server");
+    };
+
+    socket.onmessage = (event) => {
+      console.log("received", event.data);
+    };
+
+    socket.onclose = () => {
+      console.log("disconnected from web socket server");
+    };
+  }, []);
+
+  const hadleSendMessage = () => {
+    if (!socketRef.current || currentMessage.trim() === "") return;
+
+    const payload: messageType = {
+      username: adminUser ? adminUser : "unknown",
+      message: currentMessage,
+    };
+
+    socketRef.current.send(JSON.stringify(payload));
+    setCurrentMessage("");
+  };
   return (
-    <div className="w-full max-w-2xl mx-auto fixed bottom-0 mb-4 px-4">
+    <div className="w-full max-w-2xl mx-auto fixed bottom-0 mb-4 px-4 boder border-neutral-50">
       <div className="w-full h-16 flex flex-rows justify-start items-center p-2 border border-neutral-500 gap-2 rounded-md">
         <div className="border border-neutral-500 rounded-full p-2 flex items-center justify-center">
           <IconPaperclip size={16} />
@@ -24,7 +55,7 @@ export const Footer = ({
               name=""
               id=""
               rows={1}
-              placeholder={placeholder}
+              placeholder="Enter message..."
               className="w-full resize-none p-2 border border-neutral-500 rounded-md"
               onChange={(e) => setCurrentMessage(e.target.value)}
             ></textarea>
@@ -32,12 +63,13 @@ export const Footer = ({
               <button
                 className="w-full"
                 onClick={() => {
-                  messages.push({
+                  socketRef.current?.send(currentMessage);
+                  context.push({
                     username: adminUser ? adminUser : "unknown",
                     message: currentMessage,
                   });
-                  setPlaceholder("");
-                  console.log(`message sent by ${adminUser} `);
+                  console.log("message sent");
+                  console.log(context);
                 }}
               >
                 <IconUpload size={16} />

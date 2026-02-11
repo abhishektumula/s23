@@ -2,8 +2,7 @@ import { Container } from "@/components/container";
 import { NavBar } from "@/components/bars";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { Footer } from "@/components/bars/footer";
-import { ChatBubbles } from "@/components/chat-interface";
+import { CommonBar } from "@/components/bars/common-bar";
 
 export const getUserDetails = async () => {
   const session = await getServerSession();
@@ -20,8 +19,7 @@ export default async function RoomLayout() {
     <div className="flex flex-col w-full">
       <Container className="border border-neutral-500">
         <NavBar />
-        <Footer adminUser={adminUser} />
-        <ChatBubbles adminUser={adminUser} />
+        <CommonBar adminUser={adminUser} />
       </Container>
     </div>
   );

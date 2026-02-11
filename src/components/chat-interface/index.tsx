@@ -1,6 +1,6 @@
 "use client";
-import { messages } from "./data";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
+import { messageType } from "../bars/common-bar";
 
 export const Bubble = ({
   username,
@@ -26,14 +26,16 @@ export const Bubble = ({
 
 export const ChatBubbles = ({
   adminUser,
+  context,
 }: {
   adminUser: string | null | undefined;
+  context: messageType[];
 }) => {
-  const [chatMessages, setChatMessages] = useState(messages);
+  const [chatMessages, setChatMessages] = useState(context);
 
   useEffect(() => {
-    setChatMessages(messages);
-  }, [messages]);
+    setChatMessages(context);
+  }, [context.length]);
 
   return (
     <div className="flex flex-col justify-start items-start px-2 py-4 w-full gap-2">

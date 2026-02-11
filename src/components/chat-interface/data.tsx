@@ -8,18 +8,18 @@
 //   timestamp: Date;
 // };
 
-export type messageType = {
-  username: string;
-  message: string;
-};
+// export type messageType = {
+//   username: string;
+//   message: string;
+// };
 
-export const messages: messageType[] = [
-  { username: "abhishek", message: "hello" },
-  { username: "user1", message: "hi" },
-  { username: "abhishek", message: "how are you?" },
-  { username: "user1", message: "i am good, how are you?" },
-  { username: "abhishek", message: "i am good too" },
-];
+// export const messages: messageType[] = [
+//   { username: "abhishek", message: "hello" },
+//   { username: "user1", message: "hi" },
+//   { username: "abhishek", message: "how are you?" },
+//   { username: "user1", message: "i am good, how are you?" },
+//   { username: "abhishek", message: "i am good too" },
+// ];
 // type messageType = {
 //   userId: number;
 //   username: string;
